@@ -1,32 +1,25 @@
-version: '3'
-services:
-  mysql-db:
-    image: mysql:8.0
-    container_name: mysql-db
-    environment:
-      - MYSQL_ROOT_PASSWORD=rootpassword
-      - MYSQL_DATABASE=mydb
-    ports:
-      - "3306:3306"
-    networks:
-      - my-network
-    volumes:
-      - mysql-data:/var/lib/mysql
+version: '3.8'
 
-  spring-boot-app:
+services:
+  # Kontener 1: Twoja Aplikacja
+  app:
     build: .
-    container_name: spring-boot-app
+    container_name: demo-app
     ports:
       - "8080:8080"
-    environment:
-      - JAVA_OPTS=
     depends_on:
-      - mysql-db
-    networks:
-      - my-network
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/testdb
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
 
-networks:
-  my-network:
-
-volumes:
-  mysql-data:
+  # Kontener 2: Baza danych (MySQL)
+  db:
+    image: mysql:8.0
+    container_name: demo-db
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=testdb
+    ports:
+      - "3306:3306"
